@@ -54,4 +54,4 @@ jobs:
               base: 'master'
             });
             console.log(`PR created: ${response.data.html_url}`);
-          github-token: ${{ secrets.GITHUB_TOKEN  }}  # Use the new secret here
+          github-token: ${{ secrets.TOKEN_KTI  }}  # Use the new secret here

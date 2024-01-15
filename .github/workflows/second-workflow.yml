@@ -24,3 +24,34 @@ jobs:
     - name: Test with nose
       run: |
         pipenv run nosetests
+
+
+# The new job will be named review
+# The PR should be created only if we are not on the master branch
+# The PR title should have the following format: Awesome PR by <actor> where <actor> is the GitHub username of the person who triggered the workflow
+# This new job should only be executed if the previous build job that we created above succeeded        
+
+
+  review:
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref != 'refs/heads/master'
+    steps:
+      - name: Create Pull Request
+        id: create_pr
+        uses: actions/github-script@v4
+        with:
+          script: |
+            const branch = "${{ github.ref_name }}";
+            const title = `Awesome PR by \${{ github.actor }}`;
+            const body = 'Description of your PR goes here.';
+            const response = await github.pulls.create({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              title: title,
+              body: body,
+              head:  branch,
+              base: 'master'
+            });
+            console.log(`PR created: ${response.data.html_url}`);
+          github-token: ${{ secrets.GH_TOKEN }}  # Use the new secret here
